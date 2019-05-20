@@ -4,11 +4,13 @@
 
 int
 main(){
-    struct map *m = map_new(100);
-    map_set(m, "animals", "[\"dog\", \"cat\", \"horse\"]");
+    map_t *m = map_new(100);
+    printf("here 1\n");
+    map_set(m, "animals", "[\"dog\", \"cat\", \"horse\"]"); 
+    printf("here 2\n");
     map_set(m, "integer", (int *)100); 
     map_set(m, "long_long", (long long *)100);
-
+    printf("asdf\n");
     char *b = (char *)map_get(m, "animals");
     printf("%s\n", b);
 

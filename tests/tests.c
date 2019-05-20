@@ -12,7 +12,7 @@
 void
 test_map_new(void)
 {
-    struct map *m = map_new(100);
+    map_t *m = map_new(100);
     TEST_ASSERT_NOT_NULL(m);
     map_free(m);
 }
@@ -25,9 +25,8 @@ test_map_new(void)
 void
 test_map_default_cap(void)
 {
-    int expected = DEFAULT_SIZE;
-    struct map *m = map_new(0);
-    TEST_ASSERT_EQUAL_INT(expected, m->cap);
+    map_t *m = map_new(0);
+    TEST_ASSERT_EQUAL_INT(DEFAULT_SIZE, m->cap);
     map_free(m);
 }
 
@@ -39,10 +38,9 @@ test_map_default_cap(void)
 void
 test_map_len(void)
 {
-    int expected = 1;
-    struct map *m = map_new(0);
+    map_t *m = map_new(0);
     map_set(m, "animals", "[\"dog\", \"cat\", \"horse\"]");
-    TEST_ASSERT_EQUAL_INT(expected, m->len);
+    TEST_ASSERT_EQUAL_INT(1, m->len);
     map_free(m);
 }
 
@@ -53,7 +51,7 @@ test_map_len(void)
 void
 test_map_set(void)
 {
-    struct map *m = map_new(0);
+    map_t *m = map_new(0);
     map_set(m, "doctor", "Quinn");
     char *doctor = (char *)map_get(m, "doctor");
     TEST_ASSERT_EQUAL_STRING("Quinn", doctor);
@@ -67,7 +65,7 @@ test_map_set(void)
 void
 test_map_del(void)
 {
-    struct map *m = map_new(0);
+    map_t *m = map_new(0);
     map_set(m, "key", "value");
     char *pre_del_value = (char *)map_get(m, "key");
     TEST_ASSERT_EQUAL_STRING("value", pre_del_value);
@@ -84,14 +82,15 @@ test_map_del(void)
 void
 test_map_update(void)
 {
-    struct map *m = map_new(0);
+    map_t *m = map_new(0);
     int test_val = 10;
-    map_set(m, "int", test_val);
-    int int_val = (int)map_get(m, "int");
-    TEST_ASSERT_EQUAL_INT(10, int_val);
-    map_set(m, "int", test_val+1);
-    int_val = (int)map_get(m, "int");
-    TEST_ASSERT_EQUAL_INT(11, int_val);
+    map_set(m, "int", &test_val);
+    int *int_val = (int *)map_get(m, "int");
+    TEST_ASSERT_EQUAL_INT(10, *int_val);
+    int new_val = test_val + 1;
+    map_set(m, "int", &new_val);
+    int_val = (int *)map_get(m, "int");
+    TEST_ASSERT_EQUAL_INT(11, *int_val);
     map_free(m);
 }
 
@@ -102,11 +101,11 @@ test_map_update(void)
 void
 test_map_get_set_int(void)
 {
-    struct map *m = map_new(0);
+    map_t *m = map_new(0);
     int test_val = 10;
-    map_set(m, "int", test_val);
-    int int_val = (int)map_get(m, "int");
-    TEST_ASSERT_EQUAL_INT(10, int_val);
+    map_set(m, "int", &test_val);
+    int *int_val = (int *)map_get(m, "int");
+    TEST_ASSERT_EQUAL_INT(10, *int_val);
     map_free(m);
 }
 
@@ -117,10 +116,40 @@ test_map_get_set_int(void)
 void
 test_map_get_set_double(void)
 {
-    struct map *m = map_new(0);
+    map_t*m = map_new(0);
     double test_val = 10;
     map_set(m, "double", &test_val);
     double *double_val = (double *)map_get(m, "double");
+    map_free(m);
+}
+
+/*
+ * test_map_resize verifies that the a map is 
+ * capable of being resized dynamically.
+ */
+void
+test_map_resize(void)
+{
+    map_t *m = map_new(0);
+    TEST_ASSERT_NOT_NULL(m);
+    map_set(m, "1", "1");
+    map_set(m, "2", "1");
+    map_set(m, "3", "1");
+    map_set(m, "4", "1");
+    map_set(m, "5", "1");
+    map_set(m, "6", "1");
+    map_set(m, "7", "1");
+    map_set(m, "8", "1");
+    map_set(m, "9", "1");
+    map_set(m, "10", "1");
+    map_set(m, "11", "1");
+    map_set(m, "12", "1");
+    map_set(m, "13", "1");
+    map_set(m, "14", "1");
+    map_set(m, "15", "1");
+    map_set(m, "16", "1");
+    map_set(m, "17", "1");
+    TEST_ASSERT_EQUAL_INT(32, m->cap);
     map_free(m);
 }
 
@@ -136,6 +165,7 @@ main(void)
     RUN_TEST(test_map_update);
     RUN_TEST(test_map_get_set_int);
     RUN_TEST(test_map_get_set_double);
+    RUN_TEST(test_map_resize);
 
     return UNITY_END();
 }

@@ -4,35 +4,46 @@
 
 #include "map.h"
 
-void
-node_free(struct node *n) 
+/**
+ * CAPACITY_MULTIPLIER contains the value by which
+ * the map is to be increased by when resizing. This 
+ */
+#define CAPACITY_MULTIPLIER 2
+
+/**
+ * list_free frees the memory used for the nodes.
+ */
+static void
+list_free(struct node *n) 
 {
     if (!n) {
         return;
     }
-    free(n->key);
-    free(n->next);
+    struct node *tmp;
+    while (n) {
+        tmp = n;
+        n = n->next;
+        free(tmp);
+    }
     free(n);
 }
 
-struct map*
+map_t*
 map_new(const int size)
 {
-    struct map *m = malloc(sizeof(struct map));
+    map_t *m = malloc(sizeof(map_t));
     if (!m) {
         return NULL;
     }
-    memset(m, 0, sizeof(struct map));
+    memset(m, 0, sizeof(map_t));
     if (size == 0) {
         m->cap = DEFAULT_SIZE;    
     } else {
         m->cap = size;
     }
     m->len = 0;
-    m->list = malloc(sizeof(struct node*)*m->cap); 
-    if (m->list == NULL) {
-        return NULL;
-    }
+    m->list = malloc(sizeof(struct node*)*m->cap);
+    memset(m->list, 0, sizeof(struct node*)*m->cap);
     for (int i = 0; i < m->cap; i++) {
         m->list[i] = NULL;
     }
@@ -40,12 +51,12 @@ map_new(const int size)
 }
 
 void
-map_free(struct map *m) {
+map_free(map_t *m) {
     if (!m) {
         return;
     }
     if (m->list) {
-        free(m->list);
+        list_free(*m->list);
     }
     free(m);
 }
@@ -55,7 +66,7 @@ map_free(struct map *m) {
  * bucket it will be placed in.
  */
 static int
-hash(struct map *m, char *key)
+hash(map_t *m, char *key)
 {
     int sum = 0;
     for (int i = 0; i < strlen(key); i++) {
@@ -65,7 +76,7 @@ hash(struct map *m, char *key)
 }
 
 void*
-map_get(struct map *m, char *key)
+map_get(map_t *m, char *key)
 {
     int pos = hash(m, key);
     struct node *list = m->list[pos];
@@ -79,22 +90,44 @@ map_get(struct map *m, char *key)
     return NULL;
 }
 
-void
-map_set(struct map *m, char *key, void *val)
+/**
+ * map_resize will resize the given map with the 
+ * new capacity and reinsert the data. 
+ */
+static int
+map_resize(map_t *m, int new_cap) 
 {
+    map_t *nm = map_new(new_cap);
+    if (!nm) {
+        return ERR_UNABLE_TO_ALLOCATE_MEM;
+    }
+    memcpy(m, nm, sizeof(map_t));
+    map_free(nm);
+    return 0;
+}
+
+int
+map_set(map_t *m, char *key, void *val)
+{
+    if (m->len == m->cap) {
+        int res = map_resize(m, m->cap*CAPACITY_MULTIPLIER);
+        if (res != 0) {
+            return res;
+        }
+    }
     int pos = hash(m, key);              
     struct node *list = m->list[pos]; 
     struct node *temp = list;                      
     while (temp) {                 
         if (strcmp(temp->key, key) == 0) {
             temp->val = val;
-            return;
+            return 0;
         }
         temp = temp->next;
     }
     struct node *new = malloc(sizeof(struct node)); 
     if (!new) {                                     
-        return;                                    
+        return ERR_UNABLE_TO_ALLOCATE_MEM;                                    
     }
     memset(new, 0, sizeof(struct node));
     new->key = strdup(key);
@@ -102,10 +135,11 @@ map_set(struct map *m, char *key, void *val)
     new->next = list;
     m->list[pos] = new;
     m->len++;
+    return 0;
 }
 
 void
-map_del(struct map *m, char *key) {
+map_del(map_t *m, char *key) {
     int pos = hash(m, key);
     struct node **n = &m->list[pos];
     while (*n) {
@@ -117,12 +151,11 @@ map_del(struct map *m, char *key) {
             temp = (*n)->next;
         }
     }  
-    m->len--;       
-    return;
+    m->len--;
 }
 
 int 
-map_len(struct map *m) 
+map_len(map_t *m) 
 {
     int items = 0;
     for (int i = 0; i < m->cap; i++) {

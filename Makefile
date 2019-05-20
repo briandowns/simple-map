@@ -2,6 +2,7 @@ cc ?= cc
 CFLAGS = -std=c99 -O3 -Wall
 LDFALGS = 
 EXAMPLES_DIR = examples
+TEST_DIR = tests
 
 .PHONY: run-example
 run-example:
@@ -10,10 +11,11 @@ run-example:
 
 .PHONY: test
 test:
-	$(CC) -o tests/tests tests/tests.c map.c tests/unity/unity.c
-	tests/tests
-	rm -f tests/tests
+	$(CC) -o $(TEST_DIR)/tests $(TEST_DIR)/tests.c map.c $(TEST_DIR)/unity/unity.c
+	$(TEST_DIR)/tests
+	rm -f $(TEST_DIR)/tests
 
 .PHONY: clean
 clean:
 	rm -f $(EXAMPLES_DIR)/example
+	rm -f $(TEST_DIR)/tests

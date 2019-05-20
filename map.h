@@ -2,9 +2,21 @@
 #define _MAP_H
 
 /**
- * DEFAULT_SIZE contains the default size of a map
+ * DEFAULT_SIZE contains the default size of a map.
  */
 #define DEFAULT_SIZE 16
+
+/**
+ * ERR_SMALLER_THAN_DEFAULT is returned when creating a new map 
+ * and the provided size is smaller than the defined default.
+ */
+#define ERR_SMALLER_THAN_DEFAULT   2
+
+/**
+ * ERR_UNABLE_TO_ALLOCATE_MEM is returned when malloc(2) or
+ * realloc(3) are unable to allocate the needed memory.
+ */
+#define ERR_UNABLE_TO_ALLOCATE_MEM 4
 
 /**
  * node contains the key and the associated value
@@ -17,42 +29,44 @@ struct node {
 };
 
 /**
- * map contains an array of nodes with a length 
+ * map_t contains an array of nodes with a length 
  * and a capacity.
  */
-struct map {
-    int cap;
+typedef struct {
     int len;
+    int cap;
     struct node **list;
-};                  
+} map_t;                  
 
 /**
  * map_new creates a new pointer with default values
  * set for a new map. This will need to be freed
- * by the caller.
+ * by the caller. If malloc(3) fails, an error will
+ * be returned indicating no memory was able to be 
+ * allocated.
  */
-struct map *map_new(const int size);
+map_t *map_new(const int size);
 
 /**
  * map_free frees the memory used by the given pointer.
  */
-void map_free(struct map *m);
+void map_free(map_t *m);
 
 /**
  * map_get retrieves the value for the given key.
  */
-void *map_get(struct map *m, char *key);
+void *map_get(map_t *m, char *key);
 
 /**
  * map_set takes a key and a value and sets them 
  * in the map.
  */
-void map_set(struct map *m, char *key, void *val);
+int map_set(map_t *m, char *key, void *val);
 
 /**
  * map_del removes an entry the given key and value 
  * from the map.
  */
-void map_del(struct map *m, char *key);
+void map_del(map_t *m, char *key);
 
 #endif /* _MAP_H */
