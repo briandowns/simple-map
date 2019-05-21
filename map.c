@@ -29,7 +29,7 @@ list_free(struct node *n)
 }
 
 map_t*
-map_new(const int size)
+map_new(const unsigned int size)
 {
     map_t *m = malloc(sizeof(map_t));
     if (!m) {
@@ -99,7 +99,7 @@ map_resize(map_t *m, int new_cap)
 {
     map_t *nm = map_new(new_cap);
     if (!nm) {
-        return ERR_UNABLE_TO_ALLOCATE_MEM;
+        return -1;
     }
     memcpy(m, nm, sizeof(map_t));
     map_free(nm);
@@ -127,7 +127,7 @@ map_set(map_t *m, char *key, void *val)
     }
     struct node *new = malloc(sizeof(struct node)); 
     if (!new) {                                     
-        return ERR_UNABLE_TO_ALLOCATE_MEM;                                    
+        return -1;                                    
     }
     memset(new, 0, sizeof(struct node));
     new->key = strdup(key);

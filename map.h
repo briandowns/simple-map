@@ -10,13 +10,7 @@
  * ERR_SMALLER_THAN_DEFAULT is returned when creating a new map 
  * and the provided size is smaller than the defined default.
  */
-#define ERR_SMALLER_THAN_DEFAULT   2
-
-/**
- * ERR_UNABLE_TO_ALLOCATE_MEM is returned when malloc(2) or
- * realloc(3) are unable to allocate the needed memory.
- */
-#define ERR_UNABLE_TO_ALLOCATE_MEM 4
+#define ERR_SMALLER_THAN_DEFAULT 2
 
 /**
  * node contains the key and the associated value
@@ -45,7 +39,7 @@ typedef struct {
  * be returned indicating no memory was able to be 
  * allocated.
  */
-map_t *map_new(const int size);
+map_t *map_new(const unsigned int size);
 
 /**
  * map_free frees the memory used by the given pointer.
