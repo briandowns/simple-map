@@ -101,8 +101,21 @@ map_resize(map_t *m, int new_cap)
     if (!nm) {
         return -1;
     }
-    memcpy(m, nm, sizeof(map_t));
-    map_free(nm);
+
+    for (int i = 0; i < m->len; i++) {
+        struct node *list = m->list[i];
+        struct node *temp = list;
+        while (temp) {
+            int st = map_set(nm, temp->key, temp->val);
+            if (st != 0) {
+                return -1;
+            }
+            temp = temp->next;
+        }
+    }
+
+    list_free(*m->list);
+    *m = *nm;
     return 0;
 }
 
