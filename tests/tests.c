@@ -148,8 +148,16 @@ test_map_resize(void)
     map_set(m, "14", "1");
     map_set(m, "15", "1");
     map_set(m, "16", "1");
-    map_set(m, "17", "1");
+    map_set(m, "17", "111");
+    map_set(m, "18", "1");
     TEST_ASSERT_EQUAL_INT(32, m->cap);
+    TEST_ASSERT_EQUAL_INT(18, m->len);
+    for (int i = 1; i <= 18; i++) {
+        char key[2];
+	sprintf(key, "%d", i);
+        char *val = (char *)map_get(m, key);
+	TEST_ASSERT_NOT_NULL(val)
+    }
     map_free(m);
 }
 
