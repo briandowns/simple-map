@@ -5,8 +5,8 @@
 #include "map.h"
 
 /**
- * CAPACITY_MULTIPLIER contains the value by which
- * the map is to be increased by when resizing. This 
+ * contains the value by which the map is 
+ * to be increased by when resizing. This 
  */
 #define CAPACITY_MULTIPLIER 2
 
@@ -110,9 +110,8 @@ int
 map_set(map_t *m, char *key, void *val)
 {
     if (m->len == m->cap) {
-        int res = map_resize(m, m->cap*CAPACITY_MULTIPLIER);
-        if (res != 0) {
-            return res;
+        if (map_resize(m, m->cap*CAPACITY_MULTIPLIER) == -1) {
+            return -1;
         }
     }
     int pos = hash(m, key);              

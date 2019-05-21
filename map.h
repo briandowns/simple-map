@@ -2,13 +2,13 @@
 #define _MAP_H
 
 /**
- * DEFAULT_SIZE contains the default size of a map.
+ * contains the default size of a map.
  */
 #define DEFAULT_SIZE 16
 
 /**
- * ERR_SMALLER_THAN_DEFAULT is returned when creating a new map 
- * and the provided size is smaller than the defined default.
+ * returned when creating a new map and the provided 
+ * size is smaller than the defined default.
  */
 #define ERR_SMALLER_THAN_DEFAULT 2
 
